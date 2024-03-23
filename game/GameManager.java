@@ -3,13 +3,15 @@
  */
 package game;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 /**
- * Game manager class for the command line snake game.
+ * Game manager class for the gui snake game. Basically a modified version of the cmd snake game.
+ * Cleaner implementation with inheritance.
  */
 public class GameManager {
-    // Non-static variables
+    // Instance variables
     private final int x_max;
     private final int y_max;
     private String dir;
@@ -17,12 +19,12 @@ public class GameManager {
     private int score;
     private boolean isDead;
     private boolean addBody;
-    private Player player; // The player GameObject
+    private Player player;
     private Food food;
     private GameObject[][] board; // A matrix of GameObjects to keep track of the game.
 
     /**
-     * Creates the Game object.
+     * Creates the GameManager object.
      * @param x_bound int
      * @param y_bound int
      */
@@ -77,6 +79,11 @@ public class GameManager {
         }
     }
 
+    /**
+     * Draws the game to the screen using the given Graphics object.
+     * The Graphics provided is from the {@link SnakePanel}
+     * Every GameObject has a draw method.
+     */
     private void draw(Graphics g) {
         for (int i = 0; i < this.board.length; i++) {
             for (int j = 0; j < this.board[0].length; j++) {
@@ -84,7 +91,8 @@ public class GameManager {
                 o.draw(g);
             }
         }
-        g.drawString("Score: " + this.score, x_max, y_max);
+        g.setColor(Color.RED);
+        g.drawString("Score: " + this.score, 0, 15);
     }
     
     /**
@@ -113,7 +121,7 @@ public class GameManager {
 
     /**
      * After every move of the player, the board is updated accordingly.
-     * The food {@link GameObject} and the player {@link GameObject} is placed first.
+     * The {@link Food} and the {@link Player} is placed first.
      * After that, the body parts of the player are inserted by getting the GameObject
      * that is linked to the player and the one linked to that and so on.
      */
@@ -129,7 +137,7 @@ public class GameManager {
          * Body1 is connected to Body2
          * and so on.
          */
-        Body nextObj = this.player;
+        Body nextObj = this.player; // since the Player class is a Body
         while (nextObj != null) { // Until there are no more body parts.
             this.board[nextObj.y][nextObj.x] = nextObj;
             nextObj = nextObj.getBehind();
@@ -143,7 +151,7 @@ public class GameManager {
     }
 
     /**
-     * First, fill the board with empty GameObjects.
+     * First, fill the board with Empty objects.
      */
     private void generateAllEmpty() {
         for (int i = 0; i < this.y_max; i++) {
@@ -159,14 +167,16 @@ public class GameManager {
     private void generateWalls() {
         for (int i = 0; i < this.y_max; i++) {
             for (int j = 0; j < this.x_max; j++) {
-                if (i == 0 || i == y_max - 1) {
+                if ((j == 0 && i == 0) || (j == x_max - 1 && i == 0) || (j == 0 && i == y_max - 1) || (j == x_max - 1 && i == y_max - 1)) {
+                    this.board[i][j] = new Wall(j, i, "+", 19);
+                } else if ((i == 0 || i == y_max - 1)) {
                     // Up and Down
                     if (i == 0) {
                         this.board[i][j] = new Wall(j, i, "-", 19);                  
-                    } else {
+                    } else if (i == y_max - 1){
                         this.board[i][j] = new Wall(j, i, "-", 0);
                     }
-                } else if (j == 0 || j == x_max - 1) {
+                } else if ((j == 0 || j == x_max - 1)) {
                     // Left and Right
                     if (j == 0) {
                         this.board[i][j] = new Wall(j, i, "|", 19);
@@ -195,7 +205,7 @@ public class GameManager {
         while (!this.hasFood) { // Until we have successfuly added the food.
             int randX = (int)(x_max * Math.random()); 
             int randY = (int)(y_max * Math.random()); 
-            if (Empty.class.isInstance(this.board[randY][randX])) { // If the spot is an empty GameObject
+            if (Empty.class.isInstance(this.board[randY][randX])) { // If the GameObject is an Empty instance
                 this.food = new Food(randX, randY);
                 this.board[randY][randX] = this.food;
                 this.hasFood = true;
@@ -205,7 +215,7 @@ public class GameManager {
 
 
     private boolean calculateDeath(String dir) {
-        // Unless the GameObject at the direction of the player is NOT empty or food, the game should end.
+        // If the GameObject at the direction of the Player is a Wall or Body, the game should end.
         if (dir.equals("w")) {
             GameObject up = this.getUp();
             if (Wall.class.isInstance(up) || Body.class.isInstance(up)) return true; 

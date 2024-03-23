@@ -15,12 +15,13 @@ public class Wall extends GameObject {
 
     public void draw(Graphics g) {
         g.setColor(Color.BLACK);
-        g.fillRect(x * 20, y * 20, width, height);
-        // if (type.equals("-")) {
-        //     g.drawLine(x, y + offset, x + width, y);
-        // } else {
-        //     g.drawLine(x + offset, y, x, y + height);
-        // }
+        if (type.equals("-")) {
+            g.drawLine(x * 20, y * 20 + offset, x * 20 + width, y * 20 + offset);
+        } else if(type.equals("|")) {
+            g.drawLine(x * 20 + offset, y * 20, x * 20 + offset, y * 20 + height);
+        } else {
+            g.drawLine(x * 20, y * 20, x * 20, y * 20);
+        }
     }
     
 }

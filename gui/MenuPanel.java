@@ -1,6 +1,8 @@
 package gui;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -10,22 +12,28 @@ import javax.swing.SwingConstants;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
-public class MenuPanel extends JPanel {
+public class MenuPanel extends JPanel implements ItemListener {
     private String x_bound;
     private String y_bound;
     private int previousScore;
+    private int difficulty;
     private MenuFrame frame;
     private JTextField xField;
     private JTextField yField;
+    private JComboBox<String> combo;
     public MenuPanel(MenuFrame frame, int prev) {
+        this.difficulty = 0;
         this.frame = frame;
         this.previousScore = prev;
         this.x_bound = "";
         this.y_bound = "";
-        this.setLayout(new GridLayout(3, 1));
+        this.setLayout(new GridLayout(4, 1));
         this.add(xPanel());
         this.add(yPanel());
+        this.add(difficultySelector());
         this.add(addBtn());
 
     }
@@ -52,6 +60,21 @@ public class MenuPanel extends JPanel {
         return panel;
     }
 
+    private JPanel difficultySelector() {
+        JPanel panel = new JPanel(new GridLayout(1, 2));
+
+        String[] options = {"Easy", "Normal", "Hard"};
+
+        combo = new JComboBox<String>(options);
+
+        combo.addItemListener(this);
+
+        panel.add(new JLabel("Choose a difficulty: "));
+        panel.add(combo);
+
+        return panel;
+    }
+
     private JButton addBtn() {
         JButton btn = new JButton("Start");
         if (previousScore != -1) {
@@ -59,6 +82,13 @@ public class MenuPanel extends JPanel {
         }
         btn.addActionListener(new ChangeFrameListener(this.frame));
         return btn;
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        if (e.getSource().equals(combo)) {
+            this.difficulty = combo.getSelectedIndex();
+        }
     }
 
 
@@ -78,7 +108,7 @@ public class MenuPanel extends JPanel {
                 JOptionPane.showMessageDialog(frame, "Y should be a number!");
             } else {
                 frame.fm.menuFrame.setVisible(false);
-                frame.fm.snakeFrame = new SnakeFrame(this.frame.fm, Integer.parseInt(x_bound), Integer.parseInt(y_bound));
+                frame.fm.snakeFrame = new SnakeFrame(this.frame.fm, Integer.parseInt(x_bound), Integer.parseInt(y_bound), difficulty);
             }
         }
         

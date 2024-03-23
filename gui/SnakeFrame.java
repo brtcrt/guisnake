@@ -11,15 +11,17 @@ public class SnakeFrame extends JFrame implements KeyListener {
     public final int y_bound;
     public SnakePanel panel;
     public FrameManager fm;
-    public SnakeFrame(FrameManager fm, int x, int y) {
+    protected int difficulty;
+    public SnakeFrame(FrameManager fm, int x, int y, int difficulty) {
         this.fm = fm;
+        this.difficulty = difficulty;
         x_bound = x;
         y_bound = y;
         this.setBounds(calculateDimensions());
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setVisible(true);
         panel = new SnakePanel(this);
-        this.add(panel);
+        this.getContentPane().add(panel);
         this.addKeyListener(this);
     }
 

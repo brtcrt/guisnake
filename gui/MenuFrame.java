@@ -11,7 +11,7 @@ public class MenuFrame extends JFrame {
         panel = new MenuPanel(this, prev);
         this.setBounds(100, 100, 300, 300);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.add(panel);
+        this.getContentPane().add(panel);
     }
     
 }
